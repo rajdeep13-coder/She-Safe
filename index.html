@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>She Safe</title>
+    <!-- Favicon -->
+    <link rel="icon" href="icon.png" type="image/jpeg">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json"> <!-- Web App Manifest for PWA support -->
+    <meta name="theme-color" content="#e91e63"> <!-- Theme color for mobile browsers -->
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <!-- Leaflet Routing Machine JavaScript -->
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+    <!-- Leaflet Control Geocoder CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <!-- Leaflet Control Geocoder JavaScript -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fce7f3; /* Light Rose background, matching the image */
+            display: flex;
+            flex-direction: column; /* Changed to column for footer positioning */
+            justify-content: space-between; /* Distribute space between content and footer */
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0; /* Removed padding to allow footer to fit exactly */
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff; /* Reverted to white background */
+            border-radius: 1.5rem; /* Reverted to rounded corners */
+            width: 100%;
+            max-width: 450px; /* Increased max-width for better form layout */
+            padding: 2.5rem; /* Reverted to increased padding */
+            text-align: center;
+            min-height: 550px; /* Increased minimum height for the container */
+            display: flex; /* Use flexbox for container content */
+            flex-direction: column; /* Arrange items vertically */
+            justify-content: flex-start; /* Align content to the top */
+            align-items: center; /* Center content horizontally */
+            transition: all 0.3s ease-in-out; /* Smooth transition for container changes */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Reverted to box-shadow */
+            margin-top: 20px; /* Added margin-top to separate from top of page */
+            margin-bottom: 20px; /* Added margin-bottom to separate from footer */
+        }
+        .hidden {
+            display: none;
+        }
+        /* Styling for input fields and labels */
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left; /* Align labels to the left */
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #4a044e; /* Dark purple text for labels, good contrast */
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"], /* Added type="tel" for phone numbers */
+        select,
+        textarea { /* Added select and textarea to input styling */
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #fbcfe8; /* Reverted to border */
+            border-bottom: 1px solid #fbcfe8; /* Retained subtle bottom border for separation */
+            border-radius: 0.75rem; /* Reverted to border-radius */
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: #4a044e;
+            background-color: #ffffff; /* Reverted to white background */
+        }
+        input[type="text"]::placeholder,
+        input[type="email"]::placeholder,
+        input[type="password"]::placeholder,
+        input[type="tel"]::placeholder, /* Added type="tel" for phone numbers */
+        textarea::placeholder { /* Added textarea placeholder styling */
+            color: #a0a0a0; /* Lighter placeholder text */
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="tel"]:focus, /* Added type="tel" for phone numbers */
+        select:focus,
+        textarea:focus { /* Added select and textarea to focus styling */
+            border-color: #e95491; /* Stronger pink on focus, matching image */
+            box-shadow: 0 0 0 3px rgba(233, 84, 145, 0.2); /* Reverted to box-shadow on focus */
+        }
+        button {
+            /* Common button styles */
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease, border-color 0.3s ease, color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Reverted to box-shadow */
+            border: none; /* Remove default button border */
+        }
+        .btn-primary {
+            background-color: #e95491; /* Stronger pink, matching image */
+            color: white;
+            width: auto; /* Set width to auto to fit content */
+            padding: 0.75rem 1.5rem; /* Match padding of tab-button for similar height */
+            border-radius: 9999px; /* Make it fully rounded */
+        }
+        .btn-primary:hover {
+            background-color: #d44a82; /* Darker pink on hover */
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background-color: transparent; /* Transparent background */
+            color: #e95491; /* Stronger pink text */
+            border: 1px solid #e95491; /* Stronger pink border */
+            margin-top: 0.75rem;
+        }
+        .btn-secondary:hover {
+            background-color: #fce7f3; /* Light pink on hover */
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(233, 84, 145, 0.2); /* Reverted to enhanced shadow on hover */
+        }
+
+        /* Tab button styling */
+        .tab-buttons {
+            display: flex; /* Re-enabled display */
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease, border-color 0.3s ease, color 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Reverted to box-shadow */
+            width: auto;
+        }
+        .tab-button:not(.active) {
+            background-color: #ffffff; /* Reverted to white background */
+            border: 1px solid #fbcfe8; /* Reverted to border */
+            color: #e95491;
+        }
+        .tab-button.active {
+            background-color: #e95491;
+            color: white;
+            border: none;
+        }
+        .tab-button:hover:not(.active) {
+            background-color: #fce7f3;
+        }
+
+        .link-text {
+            color: #e95491; /* Stronger pink for links, matching image */
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .link-text:hover {
+            color: #d44a82; /* Darker pink on hover */
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #ef4444; /* Red for errors, keeping for visibility */
+            font-size: 0.875rem;
+            margin-top: -0.5rem;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        h2 {
+            color: #4a044e; /* Dark purple for headings, matching image */
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            font-size: 1.875rem; /* Larger heading */
+        }
+        .welcome-message {
+            color: #4a044e; /* Dark purple */
+            font-size: 2.25rem; /* Larger welcome text */
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .welcome-subtext {
+            color: #e95491; /* Stronger pink */
+            font-size: 1.25rem;
+        }
+        .app-icon {
+            /* Increased size for the icon */
+            width: 100px; /* Made icon larger */
+            height: 100px; /* Made icon larger */
+            font-size: 80px; /* Added font-size for better control over Font Awesome icon size */
+            color: #e95491; /* Stronger pink for icon, matching image */
+            margin-bottom: 0.5rem; /* Adjusted margin to bring text closer */
+        }
+
+        /* Styles for the map section */
+        .map-container {
+            position: relative;
+            width: 100%; /* Changed to 100% for more width */
+            max-width: 750px; /* Increased max-width for the map */
+            height: 450px; /* Increased height for the map */
+            background-color: #f0f0f0; /* Reverted to placeholder background */
+            border-radius: 1rem; /* Reverted to border-radius */
+            overflow: hidden; /* Ensure image stays within bounds */
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Reverted to box-shadow */
+            display: flex; /* Use flexbox to arrange items inside map-container */
+            flex-direction: column; /* Stack items vertically */
+            align-items: center; /* Center items horizontally */
+            justify-content: center; /* Center items vertically */
+        }
+
+        /* Leaflet map specific styling */
+        #map {
+            height: 100%;
+            width: 100%;
+            border-radius: 1rem; /* Apply border-radius to the map itself */
+            z-index: 1; /* Ensure map is behind the button */
+        }
+
+        .location-button, .logout-button-styled { /* Combined styles for both buttons */
+            position: relative; /* Changed to relative to flow with content */
+            background-color: #e95491;
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: 9999px; /* Fully rounded */
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease; /* Added box-shadow to transition */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Reverted to box-shadow */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 10; /* Ensure button is above other map elements */
+        }
+
+        .location-button:hover, .logout-button-styled:hover { /* Combined hover styles */
+            background-color: #d44a82;
+            transform: translateY(-2px) scale(1.02); /* Added slight scale */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Reverted to stronger shadow on hover */
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-right: 8px; /* Space between spinner and text */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Styles for the container when welcome page is active */
+        body.welcome-active .container {
+            background-color: transparent;
+            box-shadow: none;
+            max-width: 100%; /* Allow container to expand */
+            padding: 0; /* Remove container padding */
+            min-height: auto; /* Reset min-height */
+            justify-content: flex-start; /* Align content to the top */
+        }
+
+        body.welcome-active #welcome-page {
+            padding: 2.5rem; /* Restore padding for the content inside welcome-page */
+            width: 100%;
+            max-width: 800px; /* Increased max-width for the welcome page content */
+            margin: auto; /* Center the content within the expanded container */
+            background-color: #fce7f3; /* Reverted to pink background */
+            border-radius: 1.5rem; /* Reverted to border-radius */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Reverted to box-shadow */
+            display: flex; /* Use flexbox for welcome page content */
+            flex-direction: column; /* Stack items vertically */
+            align-items: center; /* Center content horizontally */
+        }
+
+        /* Styling for dropdown options on hover/focus */
+        select option:checked,
+        select option:hover,
+        select option:focus {
+            background-color: #fce7f3 !important; /* Faint pink for highlights */
+            color: #4a044e !important; /* Dark purple text */
+        }
+
+        /* Satellite toggle button styling */
+        #satellite-toggle-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #e95491;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 1000; /* Ensure it's above other map elements */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Reverted to box-shadow */
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        #satellite-toggle-button:hover {
+            background-color: #d44a82;
+            transform: scale(1.05);
+        }
+
+        /* Directions toggle button styling */
+        #directions-toggle-button {
+            position: absolute;
+            top: 60px; /* Position below satellite button */
+            right: 10px;
+            background-color: #e95491;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 1000; /* Ensure it's above other map elements */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Reverted to box-shadow */
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        #directions-toggle-button:hover {
+            background-color: #d44a82;
+            transform: scale(1.05);
+        }
+
+        /* Risk Factors toggle button styling */
+        #risk-factors-toggle-button {
+            position: absolute;
+            top: 110px; /* Position below directions button */
+            right: 10px;
+            background-color: #e95491;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 1000; /* Ensure it's above other map elements */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Reverted to box-shadow */
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        #risk-factors-toggle-button:hover {
+            background-color: #d44a82;
+            transform: scale(1.05);
+        }
+
+        /* Adjust geocoder control position and visibility */
+        .leaflet-control-geocoder {
+            margin: 0 !important;
+            position: static !important;
+            width: 100%; /* Take full width of its parent container */
+            max-width: none;
+            height: auto;
+            min-width: unset; /* Remove min-width */
+        }
+
+        /* Hide the default toggle button that appears when collapsed: false is not fully effective */
+        .leaflet-control-geocoder-toggle {
+            display: none !important;
+        }
+
+        /* Hide the default search icon that might appear outside the button */
+        .leaflet-control-geocoder-icon {
+            display: none !important;
+        }
+
+        /* Make the form itself a flex container for the input and button */
+        .leaflet-control-geocoder-form {
+            display: flex !important;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            position: relative; /* Crucial for positioning the button inside */
+            border: 1px solid #fbcfe8; /* Reverted to border */
+            border-radius: 0.75rem; /* Reverted to border-radius */
+            overflow: hidden; /* Hide overflow from button's rounded corners */
+            height: 48px; /* Set a fixed height for the entire search box */
+            box-shadow: none; /* Reverted to box-shadow */
+        }
+
+        .leaflet-control-geocoder-form input {
+            flex-grow: 1; /* Input takes up available space */
+            padding: 0.75rem 1rem;
+            padding-right: 3.5rem; /* Make space for the search button/icon */
+            border: none; /* Removed border */
+            border-bottom: 1px solid #fbcfe8; /* Added subtle bottom border for separation */
+            border-radius: 0.75rem; /* Reverted to border-radius */
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: #4a044e;
+            height: 100%; /* Fill parent height */
+            box-sizing: border-box; /* Include padding in height */
+            background-color: #ffffff; /* Reverted to white background */
+            /* Added styles for internal search icon */
+            padding-left: 2.5rem; /* Add space for the search icon on the left */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="%23a0a0a0" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.1-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zm-160 0c0-44.2-35.8-80-80-80s-80 35.8-80 80s35.8 80 80 80s80-35.8 80-80z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: 0.75rem center; /* Position it on the left */
+            background-size: 1.2rem; /* Adjust size */
+        }
+        .leaflet-control-geocoder-form input:focus {
+            border-color: #e95491; /* Stronger pink on focus, matching image */
+            box-shadow: 0 0 0 3px rgba(233, 84, 145, 0.2); /* Reverted to box-shadow on focus */
+        }
+
+        /* Style the search button inside the input field */
+        .leaflet-control-geocoder-form button {
+            position: absolute; /* Position absolutely within the form */
+            right: 0;
+            top: 0;
+            height: 100%; /* Take full height of the form */
+            width: 3.5rem; /* Fixed width for the button */
+            background-color: #e95491; /* Pink background for the button */
+            color: white;
+            display: flex; /* Ensure button is visible */
+            justify-content: center;
+            align-items: center;
+            border-top-right-radius: 0.75rem; /* Match form's border radius */
+            border-bottom-right-radius: 0.75rem; /* Match form's border radius */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            z-index: 1; /* Ensure it's above the input text but within form */
+            font-size: 1rem; /* Adjust icon size */
+            border: none; /* Remove default button border */
+            box-shadow: none; /* Removed default button shadow */
+        }
+        .leaflet-control-geocoder-form button:hover {
+            background-color: #d44a82;
+        }
+
+        /* Adjust the focus style for the entire search box (form) */
+        .leaflet-control-geocoder-form:focus-within {
+            border-color: #e95491; /* Stronger pink on focus, matching image */
+            box-shadow: 0 0 0 3px rgba(233, 84, 145, 0.2); /* Reverted to box-shadow */
+        }
+
+        /* Coords output container */
+        #coords-output-container {
+            background-color: #fce7f3; /* Reverted to pink background */
+            border-radius: 0.75rem; /* Reverted to border-radius */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Reverted to padding */
+            padding: 1rem; /* Reverted to padding */
+        }
+
+        /* SOS Section Styling */
+        .sos-section, .reporting-section { /* Combined styling for both sections */
+            background-color: #ffe4e6; /* Light pink background */
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .sos-section h3, .reporting-section h3 { /* Combined styling for both section headings */
+            color: #4a044e;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .sos-button {
+            background-color: #dc2626; /* Red for SOS */
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: none;
+        }
+
+        .sos-button:hover {
+            background-color: #b91c1c; /* Darker red on hover */
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Reporting System specific styles */
+        .report-button {
+            background-color: #10b981; /* Green for reporting */
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: none;
+        }
+
+        .report-button:hover {
+            background-color: #059669; /* Darker green on hover */
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Footer styling */
+        .footer {
+            margin-top: auto; /* Pushes the footer to the bottom */
+            width: 100%;
+            background-color: #831843; /* Deep pink color */
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            flex-shrink: 0; /* Prevent footer from shrinking */
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <!-- App Icon and Welcome Text - Moved above tab buttons and conditionally displayed -->
+        <div id="auth-header" class="flex flex-col items-center mb-2">
+            <i class="fa-sharp fa-solid fa-person-dress app-icon"></i>
+            <h2 class="text-3xl font-bold">Welcome</h2>
+        </div>
+
+        <!-- Tab Buttons - Conditionally displayed -->
+        <div id="auth-tabs" class="tab-buttons">
+            <button id="tab-login" class="tab-button active">Log In</button>
+            <button id="tab-signup" class="tab-button">Sign Up</button>
+        </div>
+
+        <!-- Sign Up Page -->
+        <div id="signup-page" class="hidden w-full">
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-username">Username</label>
+                    <input type="text" id="signup-username" placeholder="Your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email Address</label>
+                    <input type="email" id="signup-email" placeholder="your.email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-emergency-email">Emergency Email 1</label>
+                    <input type="email" id="signup-emergency-email-1" placeholder="emergency.contact1@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-emergency-email-2">Emergency Email 2</label>
+                    <input type="email" id="signup-emergency-email-2" placeholder="emergency.contact2@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="********" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" placeholder="********" required>
+                </div>
+                <p id="signup-error" class="error-message hidden"></p>
+                <button type="submit" class="btn-primary mt-4">Sign Up</button>
+            </form>
+        </div>
+
+        <!-- Log In Page -->
+        <div id="login-page" class="w-full">
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" placeholder="your.email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="********" required>
+                </div>
+                <p id="login-error" class="error-message hidden"></p>
+                <button type="submit" class="btn-primary mt-4">Log In</button>
+            </form>
+        </div>
+
+        <!-- Welcome/Map Page -->
+        <div id="welcome-page" class="hidden w-full flex flex-col items-center">
+            <div class="flex items-center justify-center gap-4 mb-8"> <!-- Flex container for Hello and Logout -->
+                <h2 class="welcome-message">Hello, <span id="welcome-username"></span>!</h2>
+                <button id="logout-button" class="logout-button-styled">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </button>
+            </div>
+            <!-- Buttons for live location and showing coordinates -->
+            <div class="flex flex-wrap justify-center gap-4 mb-4">
+                <button id="get-location-button" class="location-button">
+                    <i class="fas fa-location-arrow"></i> Get Live Location
+                </button>
+                <button id="show-coords-button" class="location-button">
+                    <i class="fas fa-info-circle"></i> Show Coordinates
+                </button>
+            </div>
+            <!-- New container for displaying coordinates -->
+            <div id="coords-output-container" class="hidden w-full bg-pink-300 p-4 rounded-lg text-center text-purple-900 font-semibold mb-4 shadow-md">
+                <!-- Coordinates will appear here -->
+            </div>
+
+            <!-- New section for Destination Search and Transportation -->
+            <div class="w-full max-w-2xl flex flex-col items-center gap-4 mb-4">
+                <div class="w-full flex items-end gap-4"> <!-- This flex container now holds both geocoder and dropdown/button -->
+                    <!-- Search box for map -->
+                    <div id="geocoder-container" class="w-full flex-grow">
+                        <!-- Leaflet Geocoder will be appended here by JavaScript -->
+                    </div>
+                    <div class="form-group w-auto mb-0"> <!-- Adjusted width and removed bottom margin -->
+                        <label for="transport-method" class="sr-only">Transportation Method</label>
+                        <select id="transport-method" class="h-12">
+                            <option value="car">Car</option>
+                            <option value="bike">Bicycle</option>
+                            <option value="walk">Walk</option>
+                            <option value="bus">Bus</option> <!-- Added Bus option here -->
+                        </select>
+                    </div>
+                    <!-- New "Go" button -->
+                    <button id="go-button" class="location-button h-12 px-4 py-2 text-sm">
+                        <i class="fas fa-play"></i> Go
+                    </button>
+                    <!-- New "Show Search Coords" button -->
+                    <button id="show-search-coords-button" class="location-button h-12 px-4 py-2 text-sm">
+                        <i class="fas fa-map-marker-alt"></i> Search Coords
+                    </button>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <!-- Satellite Toggle Button -->
+                <div id="satellite-toggle-button" title="Toggle Satellite View">
+                    <i class="fas fa-satellite"></i>
+                </div>
+                <!-- Directions Toggle Button -->
+                <div id="directions-toggle-button" title="Toggle Directions">
+                    <i class="fas fa-list"></i>
+                </div>
+                <!-- Risk Factors Toggle Button -->
+                <div id="risk-factors-toggle-button" title="Toggle Street Risk Factors">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <!-- Map will be rendered here by Leaflet -->
+                <div id="map"></div>
+            </div>
+
+            <!-- SOS Section -->
+            <div class="sos-section">
+                <h3>Emergency SOS</h3>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button id="sos-emergency-contact-button-1" class="sos-button">
+                        <i class="fas fa-user-friends"></i> Alert Emergency Contact 1
+                    </button>
+                    <button id="sos-emergency-contact-button-2" class="sos-button">
+                        <i class="fas fa-user-friends"></i> Alert Emergency Contact 2
+                    </button>
+                    <button id="sos-personal-email-button" class="sos-button" style="background-color: #f59e0b;">
+                        <i class="fas fa-envelope"></i> Alert My Email
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reporting System Section -->
+            <div class="reporting-section">
+                <h3>Reporting System</h3>
+                <form id="report-incident-form" class="w-full">
+                    <div class="form-group">
+                        <label for="incident-type">Incident Type</label>
+                        <select id="incident-type" required>
+                            <option value="">Select Incident Type</option>
+                            <option value="harassment">Harassment</option>
+                            <option value="assault">Assault</option>
+                            <option value="theft">Theft</option>
+                            <option value="suspicious-activity">Suspicious Activity</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="incident-location">Incident Location</label>
+                        <!-- Re-using geocoder-container for reporting location search -->
+                        <div id="report-geocoder-container" class="w-full flex-grow">
+                            <!-- Leaflet Geocoder will be appended here by JavaScript -->
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">Search for the incident location above.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="incident-description">Description</label>
+                        <textarea id="incident-description" rows="4" placeholder="Provide a detailed description of the incident..." required></textarea>
+                    </div>
+                    <p id="report-error" class="error-message hidden"></p>
+                    <button type="submit" class="report-button mt-4">
+                        <i class="fas fa-bullhorn"></i> Submit Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 She Safe. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Get references to page elements
+        const signupPage = document.getElementById('signup-page');
+        const loginPage = document.getElementById('login-page');
+        const welcomePage = document.getElementById('welcome-page');
+        const authHeader = document.getElementById('auth-header'); // New reference
+        const authTabs = document.getElementById('auth-tabs');     // New reference
+        const appContainer = document.querySelector('.container'); // Reference to the main container
+
+        // Get references to forms and buttons
+        const signupForm = document.getElementById('signup-form');
+        const loginForm = document.getElementById('login-form');
+        const logoutButton = document.getElementById('logout-button');
+        const getLocationButton = document.getElementById('get-location-button');
+        const showCoordsButton = document.getElementById('show-coords-button'); // New button reference
+        const coordsOutputContainer = document.getElementById('coords-output-container'); // New reference for coordinates container
+
+        // New references for destination and transportation
+        const transportMethodSelect = document.getElementById('transport-method');
+        const goButton = document.getElementById('go-button'); // New reference for Go button
+        const geocoderContainer = document.getElementById('geocoder-container'); // Reference to the new geocoder container
+        const showSearchCoordsButton = document.getElementById('show-search-coords-button'); // New button for search coordinates
+
+        // Get references to tab buttons
+        const tabLogin = document.getElementById('tab-login');
+        const tabSignup = document.getElementById('tab-signup');
+
+        // Get references to input fields and error messages
+        const signupUsernameInput = document.getElementById('signup-username');
+        const signupEmailInput = document.getElementById('signup-email');
+        const signupEmergencyEmailInput1 = document.getElementById('signup-emergency-email-1'); // Changed ID
+        const signupEmergencyEmailInput2 = document.getElementById('signup-emergency-email-2'); // New emergency email input
+        const signupPasswordInput = document.getElementById('signup-password');
+        const signupConfirmPasswordInput = document.getElementById('signup-confirm-password');
+        const signupError = document.getElementById('signup-error');
+
+        const loginEmailInput = document.getElementById('login-email');
+        const loginPasswordInput = document.getElementById('login-password');
+        const loginError = document.getElementById('login-error');
+
+        const welcomeUsernameSpan = document.getElementById('welcome-username');
+
+        // New references for SOS buttons
+        const sosEmergencyContactButton1 = document.getElementById('sos-emergency-contact-button-1'); // Changed ID
+        const sosEmergencyContactButton2 = document.getElementById('sos-emergency-contact-button-2'); // New button for second emergency contact
+        const sosPersonalEmailButton = document.getElementById('sos-personal-email-button'); // Changed from sosYourPhoneButton
+
+        // New references for Reporting System
+        const reportIncidentForm = document.getElementById('report-incident-form');
+        const incidentTypeSelect = document.getElementById('incident-type');
+        const reportGeocoderContainer = document.getElementById('report-geocoder-container'); // New geocoder for reporting
+        const incidentDescriptionTextarea = document.getElementById('incident-description');
+        const reportError = document.getElementById('report-error');
+        let reportedIncidentLatLng = null; 
+
+        // Simple in-memory "database" for demonstration
+        // Updated to store email addresses
+        const users = {}; // Stores {email: {username, password, emergencyEmail1, emergencyEmail2}}
+        const reports = []; // Stores reported incidents
+        let currentUser = null; // To store the currently logged-in user's data
+
+        // Leaflet map instance, marker, and routing control
+        let map;
+        let userMarker;
+        let routingControl; // To store the routing control instance
+        let selectedDestinationLatLng = null; // To store the coordinates from the map geocoder
+
+        // Tile layers for switching map views
+        let satelliteLayer;
+        let streetLayer;
+        let currentTileLayer;
+
+        // Risk factors layer group
+        let riskFactorsLayerGroup;
+        let riskFactorsVisible = false; // State to track visibility of risk factors
+
+        // Function to initialize the map
+        function initializeMap() {
+            // Check if map is already initialized
+            if (map) {
+                map.remove(); // Remove existing map to reinitialize if needed
+            }
+            // Initialize the map and set its view to a default location (e.g., world view)
+            map = L.map('map').setView([0, 0], 2); // Centered at [0,0] with zoom level 2
+
+            // Define tile layers
+            satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            });
+
+            streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            });
+
+            // Add street layer by default
+            currentTileLayer = streetLayer.addTo(map); // Changed to streetLayer as default
+
+            // Initialize main geocoder control (for destination search)
+            const mainGeocoderControl = L.Control.geocoder({
+                geocoder: L.Control.Geocoder.nominatim(),
+                collapsed: false, // Ensure the control is not collapsed by default
+                placeholder: 'Search for a place...', // Add a placeholder for clarity
+                defaultMarkGeocode: false // Prevent default marker behavior to handle it manually
+            }).addTo(map);
+
+            // Find the DOM element created by the main geocoder control
+            const mainGeocoderElement = mainGeocoderControl.getContainer();
+
+            // Move this element to your desired container
+            if (mainGeocoderElement && geocoderContainer) {
+                geocoderContainer.innerHTML = ''; // Clear existing content in case of re-initialization
+                geocoderContainer.appendChild(mainGeocoderElement);
+
+                // Find the search button within the geocoder form and add the Font Awesome search icon
+                const searchButton = mainGeocoderElement.querySelector('.leaflet-control-geocoder-form button');
+                if (searchButton) {
+                    searchButton.innerHTML = '<i class="fa-sharp fa-solid fa-magnifying-glass"></i>'; // Add the Font Awesome search icon
+                }
+            }
+
+            // Listen for when a geocoding result is selected for the main search
+            mainGeocoderControl.on('markgeocode', function(e) {
+                selectedDestinationLatLng = e.geocode.center; // Store the selected coordinates
+                map.setView(selectedDestinationLatLng, 14); // Pan and zoom to the selected result
+                // Optionally add a marker for the selected destination
+                if (map.destinationMarker) {
+                    map.removeLayer(map.destinationMarker);
+                }
+                map.destinationMarker = L.marker(selectedDestinationLatLng).addTo(map)
+                    .bindPopup(`Selected Destination: ${e.geocode.name}`).openPopup();
+                alertMessage(`Destination set: ${e.geocode.name}`, '#22c55e');
+                console.log('Destination selected via geocoder:', e.geocode);
+            });
+
+            // Initialize reporting geocoder control
+            const reportGeocoderControl = L.Control.geocoder({
+                geocoder: L.Control.Geocoder.nominatim(),
+                collapsed: false,
+                placeholder: 'Search for incident location...',
+                defaultMarkGeocode: false
+            }).addTo(map); // Temporarily add to map to get its container, then move it
+
+            const reportGeocoderElement = reportGeocoderControl.getContainer();
+            if (reportGeocoderElement && reportGeocoderContainer) {
+                reportGeocoderContainer.innerHTML = '';
+                reportGeocoderContainer.appendChild(reportGeocoderElement);
+
+                const reportSearchButton = reportGeocoderElement.querySelector('.leaflet-control-geocoder-form button');
+                if (reportSearchButton) {
+                    reportSearchButton.innerHTML = '<i class="fa-sharp fa-solid fa-magnifying-glass"></i>';
+                }
+            }
+
+            // Listen for when a geocoding result is selected for reporting
+            reportGeocoderControl.on('markgeocode', function(e) {
+                reportedIncidentLatLng = e.geocode.center; // Store the selected coordinates for reporting
+                alertMessage(`Incident location set: ${e.geocode.name}`, '#22c55e');
+                console.log('Incident location selected via geocoder:', e.geocode);
+            });
+
+
+            // Add a resize observer to ensure the map renders correctly when its container becomes visible
+            const resizeObserver = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    if (entry.target.id === 'map' && map) {
+                        map.invalidateSize();
+                    }
+                }
+            });
+            resizeObserver.observe(document.getElementById('map'));
+
+            // Initialize risk factors layer group
+            riskFactorsLayerGroup = L.layerGroup().addTo(map);
+            // Add initial risk factors based on current view
+            updateRiskFactorsOnMove(); // Call this once to populate initially
+            // Add event listener for map movement and zoom to update risk factors
+            map.on('moveend', updateRiskFactorsOnMove);
+        }
+
+        // Function to generate a random number within a range
+        function getRandomArbitrary(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // Function to add simulated street risk factors to the map using polylines
+        function addRiskFactorsToMap(bounds) {
+            // Clear existing risk factors if any
+            riskFactorsLayerGroup.clearLayers();
+
+            if (!bounds) {
+                console.warn("Bounds not provided for addRiskFactorsToMap. Cannot generate risk data.");
+                return;
+            }
+
+            const zoom = map.getZoom();
+            let numSegments = 30; 
+            let segmentLength = 0.01;
+
+            if (zoom > 10) {
+                numSegments = 100;
+                segmentLength = 0.005;
+            } else if (zoom > 7) {
+                numSegments = 60;
+                segmentLength = 0.01;
+            } else if (zoom > 4) {
+                numSegments = 40;
+                segmentLength = 0.02;
+            } else {
+                numSegments = 20;
+                segmentLength = 0.05;
+            }
+
+            const riskLevels = ['High', 'Medium', 'Low'];
+            const riskDescriptions = {
+                'High': 'High crime area, poor lighting, isolated.',
+                'Medium': 'Busy intersection, moderate traffic, some construction.',
+                'Low': 'Well-lit residential street, generally safe.'
+            };
+
+            // Store points to connect segments for a more "street-like" appearance
+            let currentPoints = []; // Stores potential start points for new segments
+
+            // Initialize with a few random starting points
+            for (let i = 0; i < Math.min(5, numSegments / 5); i++) { // Start with a few initial "streets"
+                currentPoints.push([getRandomArbitrary(bounds.getSouth(), bounds.getNorth()),
+                                    getRandomArbitrary(bounds.getWest(), bounds.getEast())]);
+            }
+
+            for (let i = 0; i < numSegments; i++) {
+                let startLat, startLng;
+
+                // Randomly decide to start a new street or extend an existing one
+                if (currentPoints.length === 0 || Math.random() < 0.3) { // 30% chance to start a new street
+                    startLat = getRandomArbitrary(bounds.getSouth(), bounds.getNorth());
+                    startLng = getRandomArbitrary(bounds.getWest(), bounds.getEast());
+                } else {
+                    // Pick a random existing point to extend from
+                    const randomIndex = Math.floor(Math.random() * currentPoints.length);
+                    [startLat, startLng] = currentPoints[randomIndex];
+                    // Remove the point if it's been used to prevent infinite growth from a single point
+                    // Or keep it to allow branching
+                    // For now, let's keep it to allow branching
+                }
+
+                // Generate end point with a small random offset
+                const endLat = startLat + getRandomArbitrary(-segmentLength, segmentLength);
+                const endLng = startLng + getRandomArbitrary(-segmentLength, segmentLength);
+
+                // Ensure end point is within bounds (simple clipping)
+                const clippedEndLat = Math.max(bounds.getSouth(), Math.min(bounds.getNorth(), endLat));
+                const clippedEndLng = Math.max(bounds.getWest(), Math.min(bounds.getEast(), endLng));
+
+                // Skip if the segment is too short or invalid after clipping
+                if (Math.abs(clippedEndLat - startLat) < 0.0001 && Math.abs(clippedEndLng - startLng) < 0.0001) {
+                    continue;
+                }
+
+                const randomRiskIndex = Math.floor(Math.random() * riskLevels.length);
+                const riskLevel = riskLevels[randomRiskIndex];
+                const description = riskDescriptions[riskLevel];
+
+                let color;
+                let weight;
+                let opacity;
+
+                switch (riskLevel) {
+                    case 'High':
+                        color = '#ef4444'; // Red
+                        weight = 8;
+                        opacity = 0.7;
+                        break;
+                    case 'Medium':
+                        color = '#f97316'; // Orange
+                        weight = 6;
+                        opacity = 0.6;
+                        break;
+                    case 'Low':
+                        color = '#facc15'; // Yellow
+                        weight = 4;
+                        opacity = 0.5;
+                        break;
+                    default:
+                        color = '#a0a0a0'; // Gray
+                        weight = 3;
+                        opacity = 0.4;
+                }
+
+                const polyline = L.polyline([[startLat, startLng], [clippedEndLat, clippedEndLng]], {
+                    color: color,
+                    weight: weight,
+                    opacity: opacity
+                }).bindPopup(`<b>Risk Level: ${riskLevel}</b><br>${description}`);
+
+                riskFactorsLayerGroup.addLayer(polyline);
+
+                // Add the end point to the list of potential start points for new segments
+                currentPoints.push([clippedEndLat, clippedEndLng]);
+            }
+            console.log(`Generated ${numSegments} simulated risk factors for the current view.`);
+        }
+
+        // Function to update risk factors when the map moves or zooms
+        function updateRiskFactorsOnMove() {
+            if (riskFactorsVisible && map) {
+                const currentBounds = map.getBounds();
+                addRiskFactorsToMap(currentBounds);
+            }
+        }
+
+        // Function to toggle visibility of risk factors
+        function toggleRiskFactorsVisibility(show) {
+            if (map) {
+                if (show) {
+                    map.addLayer(riskFactorsLayerGroup);
+                    riskFactorsVisible = true;
+                    alertMessage('Street risk factors shown.', '#6b7280');
+                    updateRiskFactorsOnMove(); // Generate/update risk factors when shown
+                } else {
+                    map.removeLayer(riskFactorsLayerGroup);
+                    riskFactorsVisible = false;
+                    alertMessage('Street risk factors hidden.', '#6b7280');
+                }
+            }
+        }
+
+        // Function to show a specific form and manage active tab state
+        function showForm(formToShow) {
+            signupPage.classList.add('hidden');
+            loginPage.classList.add('hidden');
+            welcomePage.classList.add('hidden');
+
+            // Hide auth header and tabs by default
+            authHeader.classList.add('hidden');
+            authTabs.classList.add('hidden');
+
+            tabLogin.classList.remove('active');
+            tabSignup.classList.remove('active');
+
+            // Manage container styling based on the form shown
+            if (formToShow === 'welcome') {
+                welcomePage.classList.remove('hidden');
+                initializeMap();
+                // Force map resize after becoming visible
+                if (map) {
+                    map.invalidateSize();
+                    console.log('Map invalidateSize() called after welcome page shown.');
+                }
+                // Hide and clear coordinates container
+                coordsOutputContainer.classList.add('hidden');
+                coordsOutputContainer.textContent = '';
+                // Remove existing marker if any
+                if (userMarker) {
+                    map.removeLayer(userMarker);
+                    userMarker = null;
+                }
+                // Clear any existing route
+                if (routingControl) {
+                    map.removeControl(routingControl);
+                    routingControl = null;
+                }
+                // Clear selected destination
+                selectedDestinationLatLng = null;
+                if (map.destinationMarker) {
+                    map.removeLayer(map.destinationMarker);
+                    map.destinationMarker = null;
+                }
+                // Clear reported incident location
+                reportedIncidentLatLng = null;
+
+                document.body.classList.add('welcome-active'); // Add class to body for welcome page styling
+            } else {
+                if (formToShow === 'login') {
+                    loginPage.classList.remove('hidden');
+                    tabLogin.classList.add('active');
+                } else if (formToShow === 'signup') {
+                    signupPage.classList.remove('hidden');
+                    tabSignup.classList.add('active');
+                }
+                authHeader.classList.remove('hidden'); // Show auth header for login/signup
+                authTabs.classList.remove('hidden');   // Show auth tabs for login/signup
+                document.body.classList.remove('welcome-active'); // Remove class from body
+            }
+
+            // Clear any previous error messages and form fields when switching forms
+            signupError.classList.add('hidden');
+            signupError.textContent = '';
+            loginError.classList.add('hidden');
+            loginError.textContent = '';
+            reportError.classList.add('hidden'); // Clear reporting error
+            reportError.textContent = ''; // Clear reporting error message
+            signupForm.reset();
+            loginForm.reset();
+            reportIncidentForm.reset(); // Reset reporting form
+        }
+
+        // --- Event Listeners ---
+
+        // Tab button clicks
+        tabLogin.addEventListener('click', () => showForm('login'));
+        tabSignup.addEventListener('click', () => showForm('signup'));
+
+        // Handle Sign Up form submission
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            const username = signupUsernameInput.value.trim();
+            const email = signupEmailInput.value.trim();
+            const emergencyEmail1 = signupEmergencyEmailInput1.value.trim(); // Changed variable name
+            const emergencyEmail2 = signupEmergencyEmailInput2.value.trim(); // New variable for second email
+            const password = signupPasswordInput.value;
+            const confirmPassword = signupConfirmPasswordInput.value;
+
+            // Basic validation
+            if (!username || !email || !emergencyEmail1 || !password || !confirmPassword) {
+                signupError.textContent = 'Required fields (Username, Email, Emergency Email 1, Password, Confirm Password) are missing.';
+                signupError.classList.remove('hidden');
+                return;
+            }
+
+            // Email validation (simple regex for email format)
+            const emailRegex = /\S+@\S+\.\S+/;
+            if (!emailRegex.test(emergencyEmail1)) {
+                signupError.textContent = 'Please enter a valid emergency contact email address 1.';
+                signupError.classList.remove('hidden');
+                return;
+            }
+            if (emergencyEmail2 && !emailRegex.test(emergencyEmail2)) { // Validate second email only if provided
+                signupError.textContent = 'Please enter a valid emergency contact email address 2.';
+                signupError.classList.remove('hidden');
+                return;
+            }
+
+
+            if (password !== confirmPassword) {
+                signupError.textContent = 'Passwords do not match.';
+                signupError.classList.remove('hidden');
+                return;
+            }
+
+            if (password.length < 6) {
+                signupError.textContent = 'Password must be at least 6 characters long.';
+                signupError.classList.remove('hidden');
+                return;
+            }
+
+            // Simple email format validation for primary email
+            if (!emailRegex.test(email)) {
+                signupError.textContent = 'Please enter a valid email address.';
+                signupError.classList.remove('hidden');
+                return;
+            }
+
+            // Check if user already exists
+            if (users[email]) {
+                signupError.textContent = 'An account with this email already exists.';
+                signupError.classList.remove('hidden');
+                return;
+            }
+
+            // If validation passes, "register" the user
+            // Storing email addresses along with other user data
+            users[email] = { username: username, password: password, emergencyEmail1: emergencyEmail1, emergencyEmail2: emergencyEmail2 };
+            console.log('User signed up:', users[email]);
+
+            // Automatically direct to Log In page after successful sign up
+            showForm('login');
+            alertMessage('Sign up successful! Please log in.', '#22c55e'); // Green success message
+        });
+
+        // Handle Log In form submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            const email = loginEmailInput.value.trim();
+            const password = loginPasswordInput.value;
+
+            // Basic validation
+            if (!email || !password) {
+                loginError.textContent = 'Email and password are required.';
+                loginError.classList.remove('hidden');
+                return;
+            }
+
+            const user = users[email];
+
+            if (!user || user.password !== password) {
+                loginError.textContent = 'Invalid email or password.';
+                loginError.classList.remove('hidden');
+                return;
+            }
+
+            // If login is successful, show welcome page
+            currentUser = user; // Set the current logged-in user
+            welcomeUsernameSpan.textContent = user.username;
+            showForm('welcome');
+        });
+
+        // Handle Log Out button click
+        logoutButton.addEventListener('click', () => {
+            currentUser = null; // Explicitly clear current user on logout
+            showForm('login'); // Go back to login page
+            alertMessage('You have been logged out.', '#6b7280'); // Gray info message
+        });
+
+
+        // Handle Get Live Location button click
+        getLocationButton.addEventListener('click', () => {
+            coordsOutputContainer.classList.add('hidden'); // Hide coordinates container
+            coordsOutputContainer.textContent = ''; // Clear coordinates container
+            getLocationButton.innerHTML = '<span class="loading-spinner"></span> Getting Location...'; // Show loading spinner
+            getLocationButton.disabled = true; // Disable button during loading
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        // No longer updating locationDisplay here
+                        alertMessage('Location retrieved successfully!', '#22c55e'); // Green success message
+
+                        // Update map view and add marker with a higher zoom level (e.g., 16 or 17)
+                        if (map) {
+                            const latLng = [latitude, longitude];
+                            // Set view to user's location with a clear zoom level (e.g., 16)
+                            map.setView(latLng, 16);
+                            if (userMarker) {
+                                map.removeLayer(userMarker); // Remove previous marker
+                            }
+                            userMarker = L.marker(latLng).addTo(map)
+                                .bindPopup('Your current location').openPopup();
+                        }
+
+                        getLocationButton.innerHTML = '<i class="fas fa-location-arrow"></i> Get Live Location'; // Restore button text
+                        getLocationButton.disabled = false; 
+                    },
+                    (error) => {
+                        let errorMessage = 'Error getting location.';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = "Location access denied. Please enable location services.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = "Location information is unavailable.";
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = "The request to get user location timed out.";
+                                break;
+                            case error.UNKNOWN_ERROR:
+                                errorMessage = "An unknown error occurred.";
+                                break;
+                        }
+                        alertMessage(errorMessage, '#ef4444'); // Red error message
+                        getLocationButton.innerHTML = '<i class="fas fa-location-arrow"></i> Get Live Location'; // Restore button text
+                        getLocationButton.disabled = false; // Enable button
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 } // Options for geolocation
+                );
+            } else {
+                alertMessage("Geolocation is not supported by this browser.", '#ef4444'); // Red error message
+                getLocationButton.innerHTML = '<i class="fas fa-location-arrow"></i> Get Live Location'; // Restore button text
+                getLocationButton.disabled = false; // Enable button
+            }
+        });
+
+        // Handle Show Coordinates button click (for current location)
+        showCoordsButton.addEventListener('click', () => {
+            if (coordsOutputContainer.classList.contains('hidden')) {
+                // If currently hidden, show it
+                if (userMarker) {
+                    const latLng = userMarker.getLatLng();
+                    const coordsText = `Latitude: ${latLng.lat.toFixed(6)}, Longitude: ${latLng.lng.toFixed(6)}`;
+
+                    coordsOutputContainer.textContent = coordsText;
+                    coordsOutputContainer.classList.remove('hidden'); // Show the container
+                    alertMessage('Current location coordinates displayed.', '#e95491');
+                } else {
+                    alertMessage('No current location available yet. Please get your live location first.', '#ef4444'); // Red error
+                    coordsOutputContainer.classList.add('hidden'); // Ensure container is hidden if no location
+                    coordsOutputContainer.textContent = ''; // Clear content
+                }
+            } else {
+                // If currently visible, hide it
+                coordsOutputContainer.classList.add('hidden'); // Hide the container
+                coordsOutputContainer.textContent = ''; // Clear content
+                alertMessage('Current location coordinates hidden.', '#6b7280'); // Gray info message
+            }
+        });
+
+        // Handle Go button click (for route planning)
+        goButton.addEventListener('click', () => {
+            const transportMethod = transportMethodSelect.value; // 'car', 'bike', 'walk'
+
+            if (!userMarker) {
+                alertMessage('Please get your live location first!', '#ef4444');
+                return;
+            }
+
+            if (!selectedDestinationLatLng) { // Check if a destination has been selected via the map search
+                alertMessage('Please search for and select a destination on the map first.', '#ef4444');
+                return;
+            }
+
+            // Show loading spinner on Go button
+            goButton.innerHTML = '<span class="loading-spinner"></span> Planning Route...';
+            goButton.disabled = true;
+
+            const originLatLng = userMarker.getLatLng();
+            console.log('Origin LatLng:', originLatLng); // Log origin
+
+            const destinationLatLng = selectedDestinationLatLng; // Use the globally stored destination
+            console.log('Destination LatLng:', destinationLatLng); // Log destination
+
+            // Clear any existing route before drawing a new one
+            if (routingControl) {
+                map.removeControl(routingControl);
+                routingControl = null;
+                console.log('Existing routing control removed.');
+            }
+
+            const completeAction = (success, message) => {
+                alertMessage(message, success ? '#22c55e' : '#ef4444');
+                goButton.innerHTML = '<i class="fas fa-play"></i> Go';
+                goButton.disabled = false;
+            };
+
+            // --- ROUTE LINE GENERATION ---
+            // This section creates and displays the route line on the map.
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(originLatLng.lat, originLatLng.lng),
+                    L.latLng(destinationLatLng.lat, destinationLatLng.lng)
+                ],
+                router: L.Routing.osrmv1({
+                    serviceUrl: `https://router.project-osrm.org/route/v1`,
+                    profile: transportMethod // 'car', 'bike', 'walk', 'bus'
+                }),
+                lineOptions: {
+                    styles: [{ color: '#e95491', weight: 6, opacity: 0.7 }] // Pink route line
+                },
+                showAlternatives: false,
+                addWaypoints: false, // Prevent adding waypoints by clicking on map
+                draggableWaypoints: false, // Prevent dragging waypoints
+                fitSelectedRoutes: true, // Zoom to fit the route
+                routeWhileDragging: false,
+                geocoder: L.Control.Geocoder.nominatim() // This is for internal routing control's geocoding, not the main search box
+            });
+
+            routingControl.addTo(map); // Add the control to the map
+            console.log('New routing control added to map:', routingControl); // Confirm addition
+
+            routingControl.on('routesfound', function(e) {
+                const routes = e.routes;
+                const summary = routes[0].summary;
+                const totalDistance = (summary.totalDistance / 1000).toFixed(2); // in km
+                const totalTime = Math.round(summary.totalTime / 60); // in minutes
+                completeAction(true, `Route found: ${totalDistance} km, ${totalTime} min.`);
+                console.log('Route found:', summary); // Log route summary
+
+                // Fit map to route bounds
+                if (routes[0] && routes[0].coordinates) {
+                    const bounds = L.latLngBounds(routes[0].coordinates);
+                    map.fitBounds(bounds, { padding: [50, 50] }); // Add some padding
+                }
+            });
+
+            routingControl.on('routingerror', function(e) {
+                let detailedErrorMessage = 'An error occurred while planning the route.';
+                if (e.error && e.error.message) {
+                    detailedErrorMessage = `Route planning failed: ${e.error.message}`;
+                } else if (e.message) {
+                    detailedErrorMessage = `Route planning failed: ${e.message}`;
+                }
+                completeAction(false, detailedErrorMessage);
+                console.error('Routing error:', e); // Log the full event object for debugging
+                if (routingControl) { // Ensure to remove control on error
+                    map.removeControl(routingControl);
+                    routingControl = null;
+                }
+            });
+        });
+
+        // Get reference to the new satellite toggle button
+        const satelliteToggleButton = document.getElementById('satellite-toggle-button');
+        const directionsToggleButton = document.getElementById('directions-toggle-button'); // New reference
+        const riskFactorsToggleButton = document.getElementById('risk-factors-toggle-button'); // New reference for risk factors button
+
+        // Handle satellite toggle button click
+        satelliteToggleButton.addEventListener('click', () => {
+            if (map) {
+                if (currentTileLayer === satelliteLayer) {
+                    // Switch to street view
+                    map.removeLayer(satelliteLayer);
+                    streetLayer.addTo(map);
+                    currentTileLayer = streetLayer;
+                    satelliteToggleButton.innerHTML = '<i class="fas fa-map"></i>'; // Change icon to map
+                    satelliteToggleButton.title = 'Toggle Street View';
+                    alertMessage('Switched to Street View', '#6b7280');
+                } else {
+                    // Switch to satellite view
+                    map.removeLayer(streetLayer);
+                    satelliteLayer.addTo(map);
+                    currentTileLayer = satelliteLayer;
+                    satelliteToggleButton.innerHTML = '<i class="fas fa-satellite"></i>'; // Change icon to satellite
+                    satelliteToggleButton.title = 'Toggle Satellite View';
+                    alertMessage('Switched to Satellite View', '#6b7280');
+                }
+            }
+        });
+
+        // Handle directions toggle button click
+        directionsToggleButton.addEventListener('click', () => {
+            if (routingControl) {
+                const container = routingControl.getContainer();
+                if (container) {
+                    if (container.style.display === 'none') {
+                        container.style.display = 'block'; // Show directions
+                        directionsToggleButton.innerHTML = '<i class="fas fa-list"></i>'; // Change icon to list
+                        directionsToggleButton.title = 'Hide Directions';
+                        alertMessage('Directions shown.', '#6b7280');
+                    } else {
+                        container.style.display = 'none'; // Hide directions
+                        directionsToggleButton.innerHTML = '<i class="fas fa-list-alt"></i>'; // Change icon to list-alt
+                        directionsToggleButton.title = 'Show Directions';
+                        alertMessage('Directions hidden.', '#6b7280');
+                    }
+                }
+            } else {
+                alertMessage('No directions to show/hide. Please plan a route first.', '#ef4444');
+            }
+        });
+
+        // Handle risk factors toggle button click
+        riskFactorsToggleButton.addEventListener('click', () => {
+            toggleRiskFactorsVisibility(!riskFactorsVisible); // Toggle the current state
+            if (riskFactorsVisible) {
+                riskFactorsToggleButton.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                riskFactorsToggleButton.title = 'Hide Street Risk Factors';
+            } else {
+                riskFactorsToggleButton.innerHTML = '<i class="fas fa-exclamation-circle"></i>'; // Change icon when hidden
+                riskFactorsToggleButton.title = 'Show Street Risk Factors';
+            }
+        });
+
+
+        // Handle Show Search Coords button click
+        showSearchCoordsButton.addEventListener('click', () => {
+            if (coordsOutputContainer.classList.contains('hidden')) {
+                if (selectedDestinationLatLng) {
+                    const coordsText = `Search Lat: ${selectedDestinationLatLng.lat.toFixed(6)}, Search Lng: ${selectedDestinationLatLng.lng.toFixed(6)}`;
+                    coordsOutputContainer.textContent = coordsText;
+                    coordsOutputContainer.classList.remove('hidden');
+                    alertMessage('Search location coordinates displayed.', '#e95491');
+                } else {
+                    alertMessage('No search location available yet. Please search for a place first.', '#ef4444');
+                    coordsOutputContainer.classList.add('hidden');
+                    coordsOutputContainer.textContent = '';
+                }
+            } else {
+                coordsOutputContainer.classList.add('hidden');
+                coordsOutputContainer.textContent = '';
+                alertMessage('Search location coordinates hidden.', '#6b7280');
+            }
+        });
+
+        // Function to send SOS alert (now sends email)
+        function sendSosAlert(emailAddress, type) {
+            if (!currentUser) {
+                alertMessage('Please log in to send SOS alerts.', '#ef4444');
+                return;
+            }
+
+            if (!emailAddress) {
+                alertMessage(`No ${type} email address found. Please ensure it's registered.`, '#ef4444');
+                return;
+            }
+
+            let subject = encodeURIComponent("Emergency! I need help!");
+            let body = "Hi there! I'm facing an emergency right now and that's my live location: "; // Updated message
+            if (userMarker) {
+                const latLng = userMarker.getLatLng();
+                body += `https://www.google.com/maps/search/?api=1&query=${latLng.lat},${latLng.lng}`;
+            } else {
+                body += "Location unavailable. Please enable location services and get your live location.";
+            }
+            body = encodeURIComponent(body);
+
+            // Use the mailto: URI scheme to open the default email client
+            // Note: This will not send the email automatically. The user will still need to confirm and send.
+            const mailtoUri = `mailto:${emailAddress}?subject=${subject}&body=${body}`;
+            window.location.href = mailtoUri;
+            alertMessage(`Opening email client to alert ${type}. Please send the email.`, '#e95491');
+        }
+
+        // Handle SOS Emergency Contact 1 button click
+        sosEmergencyContactButton1.addEventListener('click', () => {
+            if (currentUser) {
+                sendSosAlert(currentUser.emergencyEmail1, 'Emergency Contact 1');
+            } else {
+                alertMessage('Please log in to send SOS alerts.', '#ef4444');
+            }
+        });
+
+        // Handle SOS Emergency Contact 2 button click
+        sosEmergencyContactButton2.addEventListener('click', () => {
+            if (currentUser && currentUser.emergencyEmail2) {
+                sendSosAlert(currentUser.emergencyEmail2, 'Emergency Contact 2');
+            } else {
+                alertMessage('No second emergency email registered or you are not logged in.', '#ef4444');
+            }
+        });
+
+        // Handle SOS Your Phone (now Personal Email) button click
+        sosPersonalEmailButton.addEventListener('click', () => {
+            if (currentUser) {
+                sendSosAlert(currentUser.email, 'Your Personal Email'); // Changed to use the primary registered email
+            } else {
+                alertMessage('Please log in to send SOS alerts.', '#ef4444');
+            }
+        });
+
+        // Handle Report Incident form submission
+        reportIncidentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!currentUser) {
+                reportError.textContent = 'Please log in to submit a report.';
+                reportError.classList.remove('hidden');
+                return;
+            }
+
+            const incidentType = incidentTypeSelect.value;
+            const incidentDescription = incidentDescriptionTextarea.value.trim();
+
+            if (!incidentType) {
+                reportError.textContent = 'Please select an incident type.';
+                reportError.classList.remove('hidden');
+                return;
+            }
+
+            if (!reportedIncidentLatLng) {
+                reportError.textContent = 'Please search for and select the incident location on the map.';
+                reportError.classList.remove('hidden');
+                return;
+            }
+
+            if (!incidentDescription) {
+                reportError.textContent = 'Please provide a description of the incident.';
+                reportError.classList.remove('hidden');
+                return;
+            }
+
+            const newReport = {
+                reporter: currentUser.username,
+                email: currentUser.email,
+                type: incidentType,
+                location: {
+                    lat: reportedIncidentLatLng.lat,
+                    lng: reportedIncidentLatLng.lng
+                },
+                description: incidentDescription,
+                timestamp: new Date().toISOString()
+            };
+
+            reports.push(newReport); // Add report to in-memory storage
+            console.log('New Incident Reported:', newReport);
+            alertMessage('Incident reported successfully!', '#10b981'); // Green success message
+            reportIncidentForm.reset(); // Clear the form
+            reportedIncidentLatLng = null; // Clear the selected location for the next report
+            reportError.classList.add('hidden'); // Hide any previous error messages
+        });
+
+
+        // Function to display a custom alert message (instead of window.alert)
+        function alertMessage(message, bgColor) {
+            let messageBox = document.getElementById('message-box');
+            if (!messageBox) {
+                messageBox = document.createElement('div');
+                messageBox.id = 'message-box';
+                messageBox.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    padding: 15px 30px;
+                    border-radius: 10px;
+                    color: white;
+                    font-weight: bold;
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.5s ease-in-out;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                `;
+                document.body.appendChild(messageBox);
+            }
+            messageBox.style.backgroundColor = bgColor;
+            messageBox.textContent = message;
+            messageBox.style.opacity = '1';
+
+            setTimeout(() => {
+                messageBox.style.opacity = '0';
+                setTimeout(() => messageBox.remove(), 500); // Remove after fade out
+            }, 3000);
+        }
+
+        // Initialize by showing the Sign Up form by default
+        document.addEventListener('DOMContentLoaded', () => {
+            showForm('signup');
+        });
+    </script>
+</body>
+</html>
